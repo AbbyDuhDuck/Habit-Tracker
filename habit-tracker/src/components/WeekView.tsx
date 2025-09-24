@@ -1,4 +1,5 @@
 import type { Habit, HabitLog } from "../types";
+import "./AppView.css";
 
 interface Props {
   habits: Habit[];
@@ -9,7 +10,7 @@ interface Props {
 
 export default function WeekView({ habits, logs, date, onSelectDay }: Props) {
   const start = new Date(date);
-  start.setDate(date.getDate() - date.getDay()); // Sunday
+  start.setDate(date.getDate() - date.getDay());
 
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(start);
@@ -17,30 +18,51 @@ export default function WeekView({ habits, logs, date, onSelectDay }: Props) {
     return d;
   });
 
-  const countDone = (d: Date) => {
-    const key = d.toISOString().split("T")[0];
-    return habits.filter((h) =>
-      logs.some((l) => l.habitId === h.id && l.date === key && l.done)
-    ).length;
-  };
+  const getLog = (habitId: string, d: Date) =>
+    logs.find((l) => l.habitId === habitId && l.date === d.toISOString().split("T")[0]);
+
+  const getDoneCount = (d: Date) =>
+    habits.filter((h) => getLog(h.id, d)?.done).length;
 
   return (
-    <div>
-      <h3 className="text-lg font-bold mb-3">
-        Week of {start.toISOString().split("T")[0]}
-      </h3>
-      <div className="grid grid-cols-7 gap-2">
+    <div className="month-view">
+      <h3 className="month-title">Week of {start.toLocaleDateString()}</h3>
+
+      <div className="calendar-grid">
+        {/* Weekday headers */}
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+          <div key={d} className="weekday-header">{d}</div>
+        ))}
+
+        {/* Week cells */}
         {days.map((d) => (
           <div
             key={d.toISOString()}
-            className="p-2 bg-gray-700 rounded cursor-pointer hover:bg-gray-600 text-center"
+            className="calendar-cell"
             onClick={() => onSelectDay(d)}
           >
-            <div className="font-semibold">
-              {d.toLocaleDateString(undefined, { weekday: "short" })}
+            <div className="day-number">{d.getDate()}</div>
+
+            {/* Habit list */}
+            <div className="habit-list">
+              {habits.map((h) => {
+                const log = getLog(h.id, d);
+                const done = log?.done ?? false;
+                return (
+                  <div
+                    key={h.id}
+                    className={`habit-item ${done ? "done" : "not-done"}`}
+                  >
+                    <span>{h.name}</span>
+                    <span>{h.type === "numeric" ? log?.numericValue ?? "" : done ? "✓" : ""}</span>
+                  </div>
+                );
+              })}
             </div>
-            <div>{d.getDate()}</div>
-            <div className="mt-1 text-xs">{countDone(d)} / {habits.length} done</div>
+
+            <div className="done-count">
+              {getDoneCount(d)} / {habits.length} done
+            </div>
           </div>
         ))}
       </div>
