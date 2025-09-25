@@ -8,6 +8,7 @@ import type {
   MultiChoiceHabit,
 } from "../types";
 import { v4 as uuidv4 } from "uuid";
+import "./HabitsPage.css";
 
 interface Props {
   habits: Habit[];
@@ -122,18 +123,18 @@ export default function HabitsPage({ habits, setHabits }: Props) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="habits-page">
       {/* Add new habit */}
-      <div className="flex gap-2 mb-4">
+      <div className="habit-form">
         <input
           type="text"
-          className="p-2 text-black rounded flex-1"
+          className="habit-input"
           placeholder="New habit name"
           value={newHabitName}
           onChange={(e) => setNewHabitName(e.target.value)}
         />
         <select
-          className="p-2 text-black rounded"
+          className="habit-select"
           value={newHabitType}
           onChange={(e) => setNewHabitType(e.target.value as HabitType)}
         >
@@ -142,32 +143,26 @@ export default function HabitsPage({ habits, setHabits }: Props) {
           <option value="singleChoice">Single Choice</option>
           <option value="multiChoice">Multi Choice</option>
         </select>
-        <button
-          className="bg-blue-600 text-white px-4 rounded"
-          onClick={addHabit}
-        >
+        <button className="habit-button" onClick={addHabit}>
           Add Habit
         </button>
       </div>
 
       {/* Habit list */}
-      <div className="space-y-3">
+      <div className="habit-list">
         {habits.map((habit) => (
-          <div
-            key={habit.id}
-            className="p-4 bg-gray-800 rounded-lg shadow flex flex-col gap-2"
-          >
-            <div className="flex justify-between items-center">
-              <h3 className="font-semibold text-lg">{habit.name}</h3>
-              <span className="text-sm italic text-gray-400">{habit.type}</span>
+          <div key={habit.id} className="habit-card">
+            <div className="habit-header">
+              <h3 className="habit-title">{habit.name}</h3>
+              <span className="habit-type">{habit.type}</span>
             </div>
 
             {/* Numeric habit */}
             {habit.type === "numeric" && (
-              <div className="flex items-center gap-2 text-sm">
+              <div className="habit-numeric">
                 <input
                   type="number"
-                  className="p-1 w-20 text-black rounded"
+                  className="habit-input-small"
                   value={(habit as NumericHabit).threshold}
                   onChange={(e) =>
                     updateHabit(habit.id, { threshold: Number(e.target.value) })
@@ -175,17 +170,15 @@ export default function HabitsPage({ habits, setHabits }: Props) {
                 />
                 <input
                   type="text"
-                  className="p-1 w-20 text-black rounded"
+                  className="habit-input-small"
                   value={(habit as NumericHabit).unit}
                   onChange={(e) => updateHabit(habit.id, { unit: e.target.value })}
                 />
                 <select
-                  className="p-1 text-black rounded"
+                  className="habit-select"
                   value={(habit as NumericHabit).thresholdMode}
                   onChange={(e) =>
-                    updateHabit(habit.id, {
-                      thresholdMode: e.target.value as any,
-                    })
+                    updateHabit(habit.id, { thresholdMode: e.target.value as any })
                   }
                 >
                   <option value="atLeast">At least</option>
@@ -197,24 +190,19 @@ export default function HabitsPage({ habits, setHabits }: Props) {
 
             {/* Choice habit */}
             {(habit.type === "singleChoice" || habit.type === "multiChoice") && (
-              <div className="text-sm">
+              <div className="habit-options">
                 <strong>Options:</strong>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {(habit as SingleChoiceHabit | MultiChoiceHabit).options.map(
-                    (opt, idx) => (
-                      <input
-                        key={idx}
-                        type="text"
-                        className="p-1 text-black rounded"
-                        value={opt}
-                        onChange={(e) => updateOption(habit.id, idx, e.target.value)}
-                      />
-                    )
-                  )}
-                  <button
-                    className="bg-gray-700 text-white px-2 rounded"
-                    onClick={() => addOption(habit.id)}
-                  >
+                <div className="habit-options-list">
+                  {(habit as SingleChoiceHabit | MultiChoiceHabit).options.map((opt, idx) => (
+                    <input
+                      key={idx}
+                      type="text"
+                      className="habit-input-small"
+                      value={opt}
+                      onChange={(e) => updateOption(habit.id, idx, e.target.value)}
+                    />
+                  ))}
+                  <button className="habit-button-small" onClick={() => addOption(habit.id)}>
                     + Add Option
                   </button>
                 </div>
@@ -222,14 +210,11 @@ export default function HabitsPage({ habits, setHabits }: Props) {
             )}
 
             {/* Notes toggle */}
-            <label className="text-sm mt-1">
+            <label className="habit-notes">
               <input
                 type="checkbox"
                 checked={habit.allowNotes ?? false}
-                onChange={(e) =>
-                  updateHabit(habit.id, { allowNotes: e.target.checked })
-                }
-                className="mr-1"
+                onChange={(e) => updateHabit(habit.id, { allowNotes: e.target.checked })}
               />
               Allow Notes
             </label>

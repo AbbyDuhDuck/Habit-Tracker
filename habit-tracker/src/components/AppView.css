@@ -1,3 +1,6 @@
+
+/* === Month & Week View styles === */
+
 .month-view {
   padding: 16px;
 }
@@ -95,4 +98,160 @@
 .habit-item.not-done {
   background-color: #666;
   color: #eee;
+}
+
+
+/* === WeekView styles === */
+
+.week-view {
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.week-day-column {
+  background-color: #333;
+  border-radius: 6px;
+  padding: 8px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: background 0.2s;
+}
+
+.week-day-column:hover {
+  background-color: #444;
+}
+
+.week-day-header {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  background-color: #444;
+}
+
+.task-item.done {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.task-item.not-done {
+  background-color: #666;
+  color: #eee;
+}
+
+.task-summary {
+  text-align: center;
+  font-size: 0.75rem;
+  margin-top: auto;
+  color: #ccc;
+}
+
+/* Responsive: stack vertically on narrow screens */
+@media (max-width: 1000px) {
+  .week-grid {
+    grid-template-columns: 1fr;
+  }
+  .week-day-column {
+    max-width: 400px;
+    justify-self: center;
+    /* width: max-content; */
+    width: -webkit-fill-available;
+  }
+}
+
+
+/* === DayView styles === */
+
+.day-view {
+  padding: 16px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  flex-direction: column;
+}
+
+.day-title {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.day-habit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 0px;
+  margin: 6px;
+}
+
+.day-habit-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background-color: #333;
+  transition: background 0.2s;
+}
+
+.day-habit-item:hover {
+  background-color: #444;
+}
+
+.day-habit-name {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.day-habit-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.day-habit-item.done {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.day-habit-item.not-done {
+  background-color: #666;
+  color: #eee;
+}
+
+.day-habit-input,
+.day-habit-select,
+.day-habit-text {
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: none;
+  font-size: 0.9rem;
+  color: #000;
 }

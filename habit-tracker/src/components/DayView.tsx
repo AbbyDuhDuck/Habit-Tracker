@@ -2,6 +2,8 @@ import type { Habit, HabitLog, SingleChoiceHabit, MultiChoiceHabit } from "../ty
 
 import { v4 as uuidv4 } from "uuid"; // npm install uuid
 
+import "./AppView.css";
+
 interface Props {
   habits: Habit[];
   logs: HabitLog[];
@@ -53,57 +55,61 @@ export default function DayView({ habits, logs, date, onUpdateLog }: Props) {
   };
 
   return (
-    <div>
-      <h3 className="text-lg font-bold mb-3">Habits for {dateKey}</h3>
-      <ul>
+    <div className="day-view">
+      <h3 className="day-title">Habits for {dateKey}</h3>
+      <ul className="day-habit-list">
         {habits.map((habit) => {
           const log = getLog(habit.id);
+          const doneClass = log?.done ? "done" : "not-done";
+
           return (
-            <li key={habit.id} className="mb-3">
-              <span className="font-semibold">{habit.name}</span> ({habit.type}){" "}
-              {habit.type === "boolean" && (
-                <input
-                  type="checkbox"
-                  checked={log?.done ?? false}
-                  onChange={(e) => updateLog(habit, e.target.checked)}
-                />
-              )}
-              {habit.type === "numeric" && (
-                <input
-                  type="number"
-                  className="ml-2 p-1 w-20 text-black rounded"
-                  value={log?.numericValue ?? ""}
-                  onChange={(e) => updateLog(habit, Number(e.target.value))}
-                />
-              )}
-              {habit.type === "singleChoice" && (
-                <select
-                  value={log?.done ? log?.numericValue || "" : ""}
-                  className="ml-2 p-1 text-black rounded"
-                  onChange={(e) => updateLog(habit, e.target.value)}
-                >
-                  <option value="">Select...</option>
-                  {habit.options?.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              )}
-              {habit.type === "multiChoice" && (
-                <input
-                  type="text"
-                  placeholder="Select or type comma-separated"
-                  className="ml-2 p-1 text-black rounded"
-                  value={log?.done ? (log?.numericValue || "").toString() : ""}
-                  onChange={(e) =>
-                    updateLog(
-                      habit,
-                      e.target.value.split(",").map((s) => s.trim())
-                    )
-                  }
-                />
-              )}
+            <li key={habit.id} className={`day-habit-item ${doneClass}`}>
+              <span className="day-habit-name">{habit.name}</span>
+              <div className="day-habit-controls">
+                {habit.type === "boolean" && (
+                  <input
+                    type="checkbox"
+                    checked={log?.done ?? false}
+                    onChange={(e) => updateLog(habit, e.target.checked)}
+                  />
+                )}
+                {habit.type === "numeric" && (
+                  <input
+                    type="number"
+                    className="day-habit-input"
+                    value={log?.numericValue ?? ""}
+                    onChange={(e) => updateLog(habit, Number(e.target.value))}
+                  />
+                )}
+                {habit.type === "singleChoice" && (
+                  <select
+                    value={log?.done ? log?.numericValue || "" : ""}
+                    className="day-habit-select"
+                    onChange={(e) => updateLog(habit, e.target.value)}
+                  >
+                    <option value="">Select...</option>
+                    {habit.options?.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {habit.type === "multiChoice" && (
+                  <input
+                    type="text"
+                    placeholder="comma-separated"
+                    className="day-habit-text"
+                    value={log?.done ? (log?.numericValue || "").toString() : ""}
+                    onChange={(e) =>
+                      updateLog(
+                        habit,
+                        e.target.value.split(",").map((s) => s.trim())
+                      )
+                    }
+                  />
+                )}
+              </div>
             </li>
           );
         })}

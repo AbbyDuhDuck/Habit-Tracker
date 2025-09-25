@@ -21,47 +21,50 @@ export default function WeekView({ habits, logs, date, onSelectDay }: Props) {
   const getLog = (habitId: string, d: Date) =>
     logs.find((l) => l.habitId === habitId && l.date === d.toISOString().split("T")[0]);
 
-  const getDoneCount = (d: Date) =>
-    habits.filter((h) => getLog(h.id, d)?.done).length;
+  // const getDoneCount = (d: Date) =>
+  //   habits.filter((h) => getLog(h.id, d)?.done).length;
 
   return (
-    <div className="month-view">
+    <div className="week-view">
       <h3 className="month-title">Week of {start.toLocaleDateString()}</h3>
 
-      <div className="calendar-grid">
-        {/* Weekday headers */}
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-          <div key={d} className="weekday-header">{d}</div>
-        ))}
-
-        {/* Week cells */}
+      <div className="week-grid">
         {days.map((d) => (
-          <div
-            key={d.toISOString()}
-            className="calendar-cell"
-            onClick={() => onSelectDay(d)}
-          >
-            <div className="day-number">{d.getDate()}</div>
+          <div key={d.toISOString()} className="week-day-column">
+            <div
+              className="week-day-header"
+              onClick={() => onSelectDay(d)}
+            >
+              {d.toLocaleDateString(undefined, {
+                weekday: "short",
+                day: "numeric",
+              })}
+            </div>
 
-            {/* Habit list */}
-            <div className="habit-list">
+            <div className="tasks-list">
               {habits.map((h) => {
                 const log = getLog(h.id, d);
                 const done = log?.done ?? false;
                 return (
                   <div
                     key={h.id}
-                    className={`habit-item ${done ? "done" : "not-done"}`}
+                    className={`task-item ${done ? "done" : "not-done"}`}
                   >
                     <span>{h.name}</span>
-                    <span>{h.type === "numeric" ? log?.numericValue ?? "" : done ? "✓" : ""}</span>
+                    <span>
+                      {h.type === "numeric"
+                        ? log?.numericValue ?? ""
+                        : done
+                        ? "✓"
+                        : ""}
+                    </span>
                   </div>
                 );
               })}
             </div>
 
-            <div className="done-count">
-              {getDoneCount(d)} / {habits.length} done
+            <div className="task-summary">
+              {habits.filter((h) => getLog(h.id, d)?.done).length} / {habits.length} done
             </div>
           </div>
         ))}
