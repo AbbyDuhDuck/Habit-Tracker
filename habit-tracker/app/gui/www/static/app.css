@@ -1,0 +1,9 @@
+
+body { font-family: sans-serif; margin: 2em; }
+input, button { padding: 0.5em; font-size: 1em; }
+button { background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+button:hover { background: #45a049; }
+ul { margin-top: 1em; padding: 0; list-style: none; }
+li { margin-bottom: 0.3em; padding: 0.5em; background: #f3f3f3; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+.delete-btn { background: #e74c3c; }
+.delete-btn:hover { background: #c0392b; }

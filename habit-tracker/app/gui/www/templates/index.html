@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Habit Tracker</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+<body>
+    <h2>🦆 Habit Tracker Demo</h2>
+    <a href="/debug">Debug</a>
+    <input id="taskInput" placeholder="New task..." />
+    <button onclick="addTask()">Add Task</button>
+    <ul id="taskList">
+        {% for t in tasks %}
+            <li id="task-{{ t['id'] }}">
+                <span>{{ t['name'] }}</span>
+                <button class="delete-btn" onclick="deleteTask({{ t['id'] }})">Delete</button>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
