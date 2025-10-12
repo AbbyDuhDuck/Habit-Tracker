@@ -3,7 +3,12 @@
 <head>
     <title>Debug All Tasks</title>
 
-    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}"> -->
+    <!-- 
+    This File should remain self contained as it's primarily for debugging and wouldn't be included in
+    a the production code. Keeping it self contained means it COULD be easily removed event though in
+    this instance it wont be.
+    -->
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -122,7 +127,7 @@
             logsDiv.classList.toggle('collapsed');
 
             if (!isCollapsed) {
-                // Collapsing
+                // Make sure it collapses properly
                 logsDiv.style.maxHeight = logsDiv.scrollHeight + 'px'; // set before collapse
                 requestAnimationFrame(() => {
                     logsDiv.style.maxHeight = '0';
