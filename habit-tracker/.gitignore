@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+*.env
+*.venv
+env/
+venv/
+ENV/
+build/
+dist/
+
+# SQLite database
+*.db
+*.sqlite3
+
+# Flask
+instance/
+*.log
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Webview / GUI
+*.pyc
+*.pyo
+
+# Node / JS (if you add node_modules for front-end build)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Optional: local secrets or config
+config.json
+secrets.json
+.env.local
