@@ -29,16 +29,25 @@ ul {
 }
 
 li {
-    margin-bottom: 0.3em;
+    margin-bottom: 0.5em;
     padding: 0.5em;
     background: #f3f3f3;
     border-radius: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    opacity: 1;
+
+    transition: opacity 0.5s, transform 0.2s, box-shadow 0.2s;
+}
+li:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.inactive {
+li.inactive {
     opacity: 0.5;
 }
 

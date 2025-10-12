@@ -26,7 +26,7 @@
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            margin-bottom: 1em;
+            margin-bottom: 0.6em;
             padding: 1em;
             transition: transform 0.2s, box-shadow 0.2s;
         }
@@ -73,8 +73,7 @@
 
         .task-logs {
             overflow: hidden;
-            max-height: 1000px; /* large enough to show initially */
-            transition: max-height 0.3s ease;
+            transition: max-height 0.5s ease;
         }
 
         .task-logs.collapsed {
@@ -84,12 +83,28 @@
         }
 
         .toggle-logs {
-            background: #eee;
-            border: none;
+            background: none;
+            border: 1px solid #aaa0;
             border-radius: 4px;
             padding: 0.2em 0.5em;
             cursor: pointer;
             font-size: 0.9em;
+            transition: border 0.4s ease;
+        }
+        .toggle-logs:hover {
+            border: 1px solid #aaaf;
+        }
+        
+        .toggle-logs .arrow {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            transform-origin: 45% 55%; /* centers rotation */
+            font-size: 1.1em;
+            line-height: 1;
+            margin-top: 3px;
+        }
+        .toggle-logs.open .arrow {
+            transform: rotate(90deg);
         }
 
     </style>
@@ -98,12 +113,26 @@
         function toggleLogs(taskId) {
             const logsDiv = document.getElementById(`logs-${taskId}`);
             if (!logsDiv) return;
+
+            const isCollapsed = logsDiv.classList.contains('collapsed');
+            const startHeight = logsDiv.scrollHeight;
+
+            // Ensure transition happens from current height
+            logsDiv.style.maxHeight = startHeight + 'px';
             logsDiv.classList.toggle('collapsed');
+
+            if (!isCollapsed) {
+                // Collapsing
+                logsDiv.style.maxHeight = logsDiv.scrollHeight + 'px'; // set before collapse
+                requestAnimationFrame(() => {
+                    logsDiv.style.maxHeight = '0';
+                });
+            }
             
             // Optionally rotate the arrow in the button
             const btn = logsDiv.previousElementSibling.querySelector('.toggle-logs');
             if (btn) {
-                btn.textContent = logsDiv.classList.contains('collapsed') ? '▶' : '▼';
+                btn.classList.toggle('open', !logsDiv.classList.contains('collapsed'));
             }
         }
     </script>
@@ -117,7 +146,7 @@
             <li class="{{ 'active' if task.active else 'inactive' }}">
                 <div class="task-header">
                     <h4>#{{ task.id }}: {{ task.name }} ({{ 'active' if task.active else 'inactive' }})</h4>
-                    <button class="toggle-logs" onclick="toggleLogs({{ task.id }})">▶</button>
+                    <button class="toggle-logs" onclick="toggleLogs({{ task.id }})"><span class="arrow">▶</span></button>
                 </div>
                 <div id="logs-{{ task.id }}" class="task-logs collapsed">
                     <ul>
