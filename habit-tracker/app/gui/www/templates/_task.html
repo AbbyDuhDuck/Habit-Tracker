@@ -1,0 +1,12 @@
+{% macro render_task(task) %}
+<li id="task-{{ task.id }}" class="{{ 'inactive' if not task.active }}">
+    <div>
+        <input type="checkbox" {% if task.active %}checked{% endif %}
+            onchange="setActive('{{ task.id }}', this.checked)">
+        <label class="name">{{ task.name }}</label>
+    </div>
+    <div>
+        <button class="delete-btn" onclick="deleteTask('{{ task.id }}')">Delete</button>
+    </div>
+</li>
+{% endmacro %}
