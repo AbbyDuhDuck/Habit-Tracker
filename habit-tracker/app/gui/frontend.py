@@ -11,7 +11,7 @@ Packages
 
 # -=-=- Imports and Globals -=-=- #
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, current_app
 import sqlite3
 import threading
 import webview
@@ -26,12 +26,24 @@ STATIC_DIR = os_path.join(BASE_DIR, "www", "static")       # app/gui/www/static
 # Tell Flask where to find templates and static files
 APP = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 
+
+# -=-=- Helper Function -=-=- #
+
+def render_macro(template_name, macro_name, **kwargs):
+    """Render a songle macro from a template - IMO this should be a feature of flask but whatever."""
+    env = current_app.jinja_env
+    tmpl = env.get_template(template_name)
+    macro = tmpl.module.__dict__[macro_name]
+    return macro(**kwargs)
+
+
 # -=-=- Flask routes -=-=- #
 
 @APP.route('/')
 def index():
     # return render_template("index.html", tasks={})
-    all_tasks = tasks.get_all_tasks(active_only=True)
+    # all_tasks = tasks.get_all_tasks(active_only=True)
+    all_tasks = tasks.get_all_tasks()
     return render_template("index.html", tasks=all_tasks)
 
 @APP.route('/add', methods=['POST'])
@@ -40,7 +52,9 @@ def add():
     if not name:
         return jsonify({'success': False, 'error': 'Empty name'}), 400
     task_id = tasks.create_task(name)
-    return jsonify({'success': True, 'id': task_id})
+    new_task = tasks.get_task(task_id)
+    html = render_macro("_task.html", "render_task", task=new_task)
+    return jsonify({'success': True, 'id': task_id, 'html': html})
 
 @APP.route('/delete/<int:task_id>', methods=['DELETE'])
 def delete_task(task_id):
@@ -50,21 +64,23 @@ def delete_task(task_id):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@APP.route('/set_active/<int:task_id>', methods=['POST'])
+def set_active(task_id):
+    try:
+        active = request.json.get('active', True)
+        tasks.set_task_active(task_id, active)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @APP.route('/debug')
 def debug():
-    all_tasks = tasks.get_all_tasks(active_only=False)
-    debug_html = "<h3>Tasks and Logs</h3>"
-    debug_html += "<a href='/'>Back</a>"
-    for t in all_tasks:
-        debug_html += f"<h4>#{t['id']}: {t['name']}</h4><ul>"
-        logs = tasks.get_task_logs(t['id'], limit=5)
-        if logs:
-            for l in logs:
-                debug_html += f"<li>{l['completed_at']} - {l.get('notes', '')}</li>"
-        else:
-            debug_html += "<li>No completions yet</li>"
-        debug_html += "</ul>"
-    return debug_html
+    all_tasks = tasks.get_all_tasks()
+    for task in all_tasks:
+        task['logs'] = tasks.get_task_logs(task['id'], limit=5)
+
+    return render_template("debug_tasks.html", all_tasks=all_tasks)
+
 
 # -=-=- Startup functions -=-=- #
 

@@ -2,22 +2,20 @@
 <html>
 <head>
     <title>Habit Tracker</title>
+    
+    {% include "_app.html" %}
+    {% include "_toast.html" %}
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
 </head>
 <body>
+    {% include "nav.html" %}
+
     <h2>🦆 Habit Tracker Demo</h2>
-    <a href="/debug">Debug</a>
     <input id="taskInput" placeholder="New task..." />
     <button onclick="addTask()">Add Task</button>
     <ul id="taskList">
-        {% for t in tasks %}
-            <li id="task-{{ t['id'] }}">
-                <span>{{ t['name'] }}</span>
-                <button class="delete-btn" onclick="deleteTask({{ t['id'] }})">Delete</button>
-            </li>
-        {% endfor %}
+        {% from "_task.html" import render_task %}
+        {% for task in tasks %}{{ render_task(task) }}{% endfor %}
     </ul>
 </body>
 </html>

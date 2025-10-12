@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug All Tasks</title>
+
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}"> -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2em;
+            background: #f9f9f9;
+            color: #333;
+        }
+
+        h3 {
+            margin-bottom: 1em;
+            color: #444;
+        }
+
+        ul#taskList {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul#taskList > li {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-bottom: 1em;
+            padding: 1em;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        ul#taskList > li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        ul#taskList h4 {
+            margin: 0 0 0.5em 0;
+            font-size: 1.1em;
+        }
+
+        ul#taskList li.inactive h4 {
+            color: #999;
+        }
+
+        ul#taskList ul {
+            list-style: disc;
+            margin: 0.5em 0 0 1.5em;
+            padding: 0;
+        }
+
+        ul#taskList ul li {
+            padding: 0.2em 0;
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        /* Optional: color active vs inactive tasks */
+        ul#taskList > li.active {
+            border-left: 4px solid #2ecc71;
+        }
+        ul#taskList > li.inactive {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-logs {
+            overflow: hidden;
+            max-height: 1000px; /* large enough to show initially */
+            transition: max-height 0.3s ease;
+        }
+
+        .task-logs.collapsed {
+            max-height: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toggle-logs {
+            background: #eee;
+            border: none;
+            border-radius: 4px;
+            padding: 0.2em 0.5em;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+    </style>
+
+    <script>
+        function toggleLogs(taskId) {
+            const logsDiv = document.getElementById(`logs-${taskId}`);
+            if (!logsDiv) return;
+            logsDiv.classList.toggle('collapsed');
+            
+            // Optionally rotate the arrow in the button
+            const btn = logsDiv.previousElementSibling.querySelector('.toggle-logs');
+            if (btn) {
+                btn.textContent = logsDiv.classList.contains('collapsed') ? '▶' : '▼';
+            }
+        }
+    </script>
+</head>
+<body>
+    {% include "nav.html" %}
+    <h3>Tasks and Logs</h3>
+
+    <ul id="taskList">
+        {% for task in all_tasks %}
+            <li class="{{ 'active' if task.active else 'inactive' }}">
+                <div class="task-header">
+                    <h4>#{{ task.id }}: {{ task.name }} ({{ 'active' if task.active else 'inactive' }})</h4>
+                    <button class="toggle-logs" onclick="toggleLogs({{ task.id }})">▶</button>
+                </div>
+                <div id="logs-{{ task.id }}" class="task-logs collapsed">
+                    <ul>
+                        {% set logs = task.logs %}
+                        {% if logs %}
+                            {% for l in logs %}
+                                <li>{{ l.completed_at }} - {{ l.notes or '' }}</li>
+                            {% endfor %}
+                        {% else %}
+                            <li>No completions yet</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>

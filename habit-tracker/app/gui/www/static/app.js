@@ -2,31 +2,57 @@
 async function addTask() {
     const name = document.getElementById('taskInput').value;
     if (!name) return;
-    const res = await fetch('/add', {
+    // -=-=- //
+    fetch('/add', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({name})
+    }).then(async response => {
+        const data = await response.json();
+        if (data.success && data.html) {
+            document.getElementById('taskList')
+                .insertAdjacentHTML('beforeend', data.html);
+            document.getElementById('taskInput').value = '';
+        } else if (data.success) {
+            location.reload(true);
+        } else alert("Failed to add task: " + (data.error || ""));
+        // TODO: Use a Toast instead
     });
-    const data = await res.json();
-    if (data.success) {
-        const li = document.createElement('li');
-        li.id = `task-${data.id}`;
-        li.innerHTML = `
-            <span>${name}</span>
-            <button class="delete-btn" onclick="deleteTask(${data.id})">Delete</button>
-        `;
-        document.getElementById('taskList').appendChild(li);
-        document.getElementById('taskInput').value = '';
-    }
 }
 
 async function deleteTask(taskId) {
-    const res = await fetch(`/delete/${taskId}`, { method: 'DELETE' });
-    const data = await res.json();
-    if (data.success) {
-        const li = document.getElementById(`task-${taskId}`);
-        if (li) li.remove();
-    } else {
-        alert("Failed to delete task: " + (data.error || ""));
+    fetch(`/delete/${taskId}`, {
+        method: 'DELETE'
+    }).then(async response => {
+        const data = await response.json();
+        if (data.success) {
+            const li = document.getElementById(`task-${taskId}`);
+            if (li) li.remove();
+        } else alert("Failed to delete task: " + (data.error || ""));
+        // TODO: Use a Toast instead
+    }).catch(error => {
+        alert("Failed to delete task: " + (error || ""));
+        // TODO: Use a Toast instead
+    });
+}
+
+async function setActive(taskId, isActive) {
+    function revertCheckbox() {
+        const checkbox = document.getElementById(`task-${taskId}-active`);
+        if (checkbox) { checkbox.checked = !isActive }
     }
+    // -=-=- //
+    const li = document.getElementById(`task-${taskId}`);
+    fetch(`/set_active/${taskId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ active: isActive })
+    }).then(async response => {
+        if (!li) { return; }
+        const data = await response.json();
+        if (data.success) {
+            if (isActive) li.classList.remove('inactive');
+            else li.classList.add('inactive');
+        } else revertCheckbox();
+    }).catch(error => revertCheckbox());
 }
