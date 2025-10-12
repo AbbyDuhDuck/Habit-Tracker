@@ -33,7 +33,7 @@ def log_completion(task_id: int, notes: str = "") -> int:
 # READ / GET
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-def get_all_tasks(active_only: bool = True):
+def get_all_tasks(active_only: bool = False):
     if active_only:
         return fetch_all("tasks", "active = 1")
     return fetch_all("tasks")
