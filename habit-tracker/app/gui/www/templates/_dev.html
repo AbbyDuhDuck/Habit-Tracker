@@ -1,0 +1,48 @@
+{# This is a play for helpers while developing the app #}
+
+{# {% if not globals.get("_debug_style_included") %} #}
+<style>
+    ul.debug-dict, ul.debug-list {
+        list-style: none;
+        padding: 0.5em;
+        background: #f4f4f4;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 0.9em;
+        margin: 0.5em 0;
+    }
+
+    ul.debug-dict li {
+        margin: 0.2em 0;
+    }
+
+    ul.debug-dict li span.key {
+        font-weight: bold;
+        color: #333;
+    }
+
+    ul.debug-dict li span.value {
+        color: #666;
+        margin-left: 0.4em;
+    }
+</style>
+{# {% set _debug_style_included = True %} #}
+{# {% endif %} #}
+
+
+{% macro display_dict(dict) %}
+<ul class="debug-dict">
+    {% for key, value in dict.items() %}
+        <li><span class="key">{{ key }}:</span> <span class="value">{{ value }}</span></li>
+    {% endfor %}
+</ul>
+{% endmacro %}
+
+
+{% macro display_list(list) %}
+<ul class="debug-list">
+    {% for value in list %}
+        <li>{{value}}</li>
+    {% endfor %}
+</ul>
+{% endmacro %}
