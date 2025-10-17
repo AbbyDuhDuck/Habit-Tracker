@@ -18,6 +18,12 @@ def get_db():
 # Define all tables and columns
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 SCHEMA = {
+    # User Settings
+    "settings": {
+        "key": "TEXT PRIMARY KEY",
+        "value": "TEXT",
+    },
+    
     # Each task definition (e.g., “Drink Water”, “Go for Walk”)
     "tasks": {
         "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
@@ -37,6 +43,8 @@ SCHEMA = {
         "notes": "TEXT",
         "FOREIGN KEY(task_id)": "REFERENCES tasks(id) ON DELETE CASCADE",
     },
+
+
 }
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -81,6 +89,27 @@ def insert_and_return_id(table: str, **values) -> int:
             tuple(values.values()),
         )
         return cur.lastrowid
+
+def insert_or_update(table:str, **values):
+    cols = ", ".join(values.keys())
+    placeholders = ", ".join("?" for _ in values)
+    with get_db() as db:
+        cur = db.execute(
+            f"INSERT OR REPLACE INTO {table} ({cols}) VALUES ({placeholders})",
+            tuple(values.values()),
+        )
+        return cur.lastrowid
+
+def insert_or_update_rows(table:str, *values:list[dict]):
+    with get_db() as db:
+        for row_values in values:
+            cols = ", ".join(row_values.keys())
+            placeholders = ", ".join("?" for _ in row_values)
+            # -=-=- #
+            cur = db.execute(
+                f"INSERT OR REPLACE INTO {table} ({cols}) VALUES ({placeholders})",
+                tuple(row_values.values()),
+            )
 
 def fetch_all(table: str, where: str = None, params: tuple = ()):
     with get_db() as db:

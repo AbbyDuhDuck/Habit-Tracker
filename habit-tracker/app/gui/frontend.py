@@ -82,6 +82,19 @@ def debug():
     return render_template("debug_tasks.html", all_tasks=all_tasks)
 
 
+# -=-=- Settings -=-=- #
+
+@APP.route('/settings', methods=['GET'])
+def settings():
+    settings = tasks.get_settings()
+    return render_template("settings.html", settings=settings)
+
+@APP.route('/settings', methods=['POST'])
+def save_settings():
+    data = request.json
+    tasks.set_settings(**data)
+    return jsonify({'success': True})
+
 # -=-=- Startup functions -=-=- #
 
 def start_server(host: str = '127.0.0.1', port: int = 6900):

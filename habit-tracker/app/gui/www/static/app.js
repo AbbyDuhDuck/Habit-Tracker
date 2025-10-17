@@ -15,8 +15,7 @@ async function addTask() {
             document.getElementById('taskInput').value = '';
         } else if (data.success) {
             location.reload(true);
-        } else alert("Failed to add task: " + (data.error || ""));
-        // TODO: Use a Toast instead
+        } else showToast("Failed to add task: " + (data.error || ""), "error");
     });
 }
 
@@ -28,11 +27,9 @@ async function deleteTask(taskId) {
         if (data.success) {
             const li = document.getElementById(`task-${taskId}`);
             if (li) li.remove();
-        } else alert("Failed to delete task: " + (data.error || ""));
-        // TODO: Use a Toast instead
+        } else showToast("Failed to delete task: " + (data.error || ""), "error");
     }).catch(error => {
-        alert("Failed to delete task: " + (error || ""));
-        // TODO: Use a Toast instead
+        showToast("Failed to delete task: " + (error || ""));
     });
 }
 

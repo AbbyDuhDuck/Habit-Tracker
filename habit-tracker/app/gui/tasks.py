@@ -1,6 +1,8 @@
 from datetime import datetime
 from .database import (
     insert_and_return_id,
+    insert_or_update_rows,
+    insert_or_update,
     fetch_all,
     update,
     delete,
@@ -73,3 +75,20 @@ def delete_task(task_id: int):
     with get_db() as db:
         db.execute("DELETE FROM task_log WHERE task_id = ?", (task_id,))
         db.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
+
+# -=-=- Settings -=-=- #
+
+def get_settings():
+    results = fetch_all('settings')
+    settings = {d['key']: d['value'] for d in results}
+    print(results)
+    print(settings)
+    return settings
+
+def set_setting(setting:str, value:str):
+    insert_or_update('settings', key=setting, value=value)
+
+def set_settings(**values):
+    row_values = [{'key':k, 'value':v} for k, v in values.items()]
+    insert_or_update_rows('settings', *row_values)
+
