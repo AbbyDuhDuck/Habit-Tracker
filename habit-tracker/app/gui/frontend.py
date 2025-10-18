@@ -11,7 +11,7 @@ Packages
 
 # -=-=- Imports and Globals -=-=- #
 
-from flask import Flask, render_template, request, jsonify, current_app
+from flask import Flask, render_template, request, jsonify, current_app, Response
 import sqlite3
 import threading
 import webview
@@ -26,6 +26,14 @@ STATIC_DIR = os_path.join(BASE_DIR, "www", "static")       # app/gui/www/static
 # Tell Flask where to find templates and static files
 APP = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 
+ACCENT_COLORS = {
+    "red":   {"dark": "#ff4d4d", "light": "#ff9999"},
+    "blue":  {"dark": "#4da6ff", "light": "#80cfff"},
+    "green": {"dark": "#4dff88", "light": "#80ffb3"},
+    "yellow":{"dark": "#ffdd4d", "light": "#fff380"},
+    "purple":{"dark": "#b84dff", "light": "#d19aff"},
+    "pink":  {"dark": "#ff66b2", "light": "#ff99c8"},
+}
 
 # -=-=- Helper Function -=-=- #
 
@@ -36,6 +44,20 @@ def render_macro(template_name, macro_name, **kwargs):
     macro = tmpl.module.__dict__[macro_name]
     return macro(**kwargs)
 
+
+# -=-=- Context -=-=- #
+
+@APP.context_processor
+def inject_globals():
+    """Make settings available in all templates automatically"""
+    settings = tasks.get_settings()
+    return dict(settings=settings, accent_colors=ACCENT_COLORS)
+
+
+@APP.route("/static/colors.css")
+def colors_css():
+    css = render_template("colors.css.j2", accent_colors=ACCENT_COLORS)
+    return Response(css, mimetype="text/css")
 
 # -=-=- Flask routes -=-=- #
 
@@ -86,8 +108,7 @@ def debug():
 
 @APP.route('/settings', methods=['GET'])
 def settings():
-    settings = tasks.get_settings()
-    return render_template("settings.html", settings=settings)
+    return render_template("settings.html")
 
 @APP.route('/settings', methods=['POST'])
 def save_settings():

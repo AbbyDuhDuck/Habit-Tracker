@@ -1,0 +1,59 @@
+/* colors.css */
+:root {
+    --app-bg: #f9f9f9;
+    --app-nav-bg: #eee;
+    --app-card-bg: #fff;
+
+    --app-text: #333333;
+    --app-text-disabled: #555;
+
+    --app-border: #ccc;
+
+    --accent: var(--accent-blue);
+    
+    {% for name, color in accent_colors.items() %}
+    --accent-{{ name }}: {{ color.light }};
+    {% endfor %}
+}
+
+/* dark mode */
+[data-theme="dark"] {
+    --app-bg: #333;
+    --app-nav-bg: #444;
+    --app-card-bg: #777;
+
+    --app-text: #eeeeee;
+    --app-text-disabled: #ccc;
+
+    --app-border: #555;
+
+    {% for name, color in accent_colors.items() %}
+    --accent-{{ name }}: {{ color.dark }};
+    {% endfor %}
+}
+
+/* accent colors */
+{% for name in accent_colors %}
+[data-accent="{{ name }}"] { --accent: var(--accent-{{ name }}); }
+{% endfor %}
+
+/* Apply globally */
+* {
+    transition: all 0.3s;
+}
+
+.accent {
+    color: var(--accent);
+}
+.accent-bg {
+    background-color: var(--accent);
+}
+
+/* button {
+    background: var(--accent);
+    border: none;
+    padding: 0.6em 1.2em;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+} */

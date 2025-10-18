@@ -1,0 +1,5 @@
+<script>
+    window.appSettings = {{ settings | tojson }};
+    document.documentElement.setAttribute("data-theme", window.appSettings["color-mode"]);
+    document.documentElement.setAttribute("data-accent", window.appSettings["accent-color"]);
+</script>
