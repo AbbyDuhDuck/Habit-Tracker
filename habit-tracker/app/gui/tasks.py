@@ -81,8 +81,6 @@ def delete_task(task_id: int):
 def get_settings():
     results = fetch_all('settings')
     settings = {d['key']: d['value'] for d in results}
-    print(results)
-    print(settings)
     return settings
 
 def set_setting(setting:str, value:str):
