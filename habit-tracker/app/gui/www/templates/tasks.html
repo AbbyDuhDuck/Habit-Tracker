@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Habit Tracker</title>
+    
+    {% include "_app.html" %}
+    {% include "_toast.html" %}
+
+</head>
+<body>
+    {% include "nav.html" %}
+
+    <div class="content">
+        <h2>Task Options</h2>
+        <input id="taskInput" placeholder="New task..." />
+        <button onclick="addTask()">Add Task</button>
+        <ul id="taskList">
+            {% from "_task.html" import render_task %}
+            {% for task in tasks %}{{ render_task(task) }}{% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
