@@ -55,21 +55,14 @@ def inject_globals():
 
 
 @APP.route("/static/colors.css")
-def colors_css():
+def res_colors_css():
     css = render_template("colors.css.j2", accent_colors=ACCENT_COLORS)
     return Response(css, mimetype="text/css")
 
-# -=-=- Flask routes -=-=- #
-
-@APP.route('/')
-def index():
-    # return render_template("index.html", tasks={})
-    # all_tasks = tasks.get_all_tasks(active_only=True)
-    all_tasks = tasks.get_all_tasks()
-    return render_template("index.html", tasks=all_tasks)
+# -=-=- API routes -=-=- #
 
 @APP.route('/add', methods=['POST'])
-def add():
+def api_add():
     name = request.json.get('name', '').strip()
     if not name:
         return jsonify({'success': False, 'error': 'Empty name'}), 400
@@ -79,7 +72,7 @@ def add():
     return jsonify({'success': True, 'id': task_id, 'html': html})
 
 @APP.route('/delete/<int:task_id>', methods=['DELETE'])
-def delete_task(task_id):
+def api_delete_task(task_id):
     try:
         tasks.delete_task(task_id)
         return jsonify({'success': True})
@@ -87,7 +80,7 @@ def delete_task(task_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @APP.route('/set_active/<int:task_id>', methods=['POST'])
-def set_active(task_id):
+def api_set_active(task_id):
     try:
         active = request.json.get('active', True)
         tasks.set_task_active(task_id, active)
@@ -96,7 +89,7 @@ def set_active(task_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @APP.route('/debug')
-def debug():
+def api_debug():
     all_tasks = tasks.get_all_tasks()
     for task in all_tasks:
         task['logs'] = tasks.get_task_logs(task['id'], limit=5)
@@ -104,14 +97,34 @@ def debug():
     return render_template("debug_tasks.html", all_tasks=all_tasks)
 
 
+# -=-=- Home -=-=- #
+
+@APP.route('/')
+def route_index():
+    # return render_template("index.html", tasks={})
+    # all_tasks = tasks.get_all_tasks(active_only=True)
+    all_tasks = tasks.get_all_tasks()
+    return render_template("index.html", tasks=all_tasks)
+
+
+# -=-=- Tasks -=-=- #
+
+@APP.route('/tasks')
+def route_tasks():
+    # return render_template("index.html", tasks={})
+    # all_tasks = tasks.get_all_tasks(active_only=True)
+    all_tasks = tasks.get_all_tasks()
+    return render_template("tasks.html", tasks=all_tasks)
+
+
 # -=-=- Settings -=-=- #
 
 @APP.route('/settings', methods=['GET'])
-def settings():
+def route_settings():
     return render_template("settings.html")
 
 @APP.route('/settings', methods=['POST'])
-def save_settings():
+def api_save_settings():
     data = request.json
     tasks.set_settings(**data)
     return jsonify({'success': True})
